@@ -7,6 +7,24 @@ void Menu::DrawScene()
 	
 }
 
+Menu::Menu(olc::PixelGameEngine *pge) {
+	_pge = pge;
+	image = "images/menu/titre.png"; //"images/menu/titre.png"
+	timer = new Timer();
+	timer->StartChrono();
+	lHEIGHT = _pge->ScreenHeight();
+	lWIDTH = _pge->ScreenWidth();
+	PlaySound(TEXT("images/sound/AnvilOfCrom.wav"), NULL, SND_ASYNC); //SND_FILENAME or SND_LOOP
+	imagesDecorsmini.push_back("images\\stage\\foretmini.png");
+	imagesDecorsmini.push_back("images\\stage\\arenemini.png");
+	imagesDecorsmini.push_back("images\\stage\\plainemini.png");
+	spritesDecorsmini.push_back(new olc::Sprite(imagesDecorsmini.at(0)));
+	spritesDecorsmini.push_back(new olc::Sprite(imagesDecorsmini.at(1)));
+	spritesDecorsmini.push_back(new olc::Sprite(imagesDecorsmini.at(2)));
+	stagesChoice = 0;
+}
+
+
 void Menu::DrawYourself()
 {
 	if (!timer->OneStep(1))
@@ -17,7 +35,27 @@ void Menu::DrawYourself()
 	}
 	else {
 		_pge->Clear(olc::BLACK); 
-		_pge->DrawString(lWIDTH/6, lHEIGHT/2, "PLEASE PRESS SPACE TO CONTINU");
+		int x = 50; 
+		for (auto value : spritesDecorsmini) {
+
+			_pge->DrawSprite(x, 50, value); 
+			x = x + 80; 
+		}
+		if (stagesChoice == 0)
+		{
+			_pge->DrawRect(50 , 50, spritesDecorsmini.at(0)->width, spritesDecorsmini.at(0)->height, olc::RED);
+		}
+		else if (stagesChoice == 1)
+		{
+			_pge->DrawRect((50 * (stagesChoice+1)) + 30  , 50, spritesDecorsmini.at(0)->width, spritesDecorsmini.at(0)->height, olc::RED);
+
+		}
+		else if (stagesChoice == 2)
+		{
+			_pge->DrawRect((50 * (stagesChoice+2))+10 , 50, spritesDecorsmini.at(0)->width, spritesDecorsmini.at(0)->height, olc::RED);
+
+		}
+		_pge->DrawString(lWIDTH/6 -20, lHEIGHT/2 + 40, "PLEASE PRESS SPACE TO CONTINU");
 			
 	}
 
@@ -25,6 +63,14 @@ void Menu::DrawYourself()
 		  isExit = true; 
 
 				}
+	  if (_pge->GetKey(olc::RIGHT).bPressed) {
+		  if (stagesChoice< 2)
+		  stagesChoice++; 
+	  }
+	  if (_pge->GetKey(olc::LEFT).bPressed) {
+		  if (stagesChoice > 0)
+			  stagesChoice--;
+	  }
 	
 }
 
@@ -36,20 +82,22 @@ void Menu::Update()
 
 
 
-Menu::Menu(olc::PixelGameEngine *pge){
-	_pge = pge; 
-	image = "images/menu/titre.png"; //"images/menu/titre.png"
-	timer = new Timer(); 
-	timer->StartChrono(); 
-	lHEIGHT = _pge->ScreenHeight();
-	lWIDTH = _pge->ScreenWidth(); 
-}
 
 
 Menu::~Menu()
 {
 	delete(imageS);
 	delete(timer); 
+	deleteFromVector(spritesDecorsmini);
+}
+
+void Menu::deleteFromVector(std::vector<olc::Sprite*> tabToClean)
+{
+	for (auto it = tabToClean.cbegin(); it != tabToClean.cend(); it++)
+	{
+		delete (*it);
+	}
+	tabToClean.clear();
 }
 
 
@@ -58,6 +106,7 @@ Menu::~Menu()
 	bool Menu::OnUserCreate(){
 		// Called once at the start, so create things here
 	
+		
 
 		return true;
 	}

@@ -3,18 +3,40 @@
 
 
 
-Game::Game(olc::PixelGameEngine *pge) :_totalTimeElapsed(0)
+Game::Game(olc::PixelGameEngine *pge) :_totalTimeElapsed(0),_level(1)
 {
 	_pge = pge;
 	_internalState = INGAME;
 	//_spriteA = new SpritesA(12,pge); 
-	_spriteA = new SpritesA(12,_pge,25,100,true,true, false,olc::DARK_MAGENTA);
-	_spriteB = new SpritesA(12, _pge, 150, 100, true, false, true, olc::RED);
-
-	_spriteA->_enemy = _spriteB; 
-	_spriteB->_enemy = _spriteA;
-	decors.push_back("images\\stage\\foret.png");
 	
+	_choiceStage = 0;
+	
+	BeginLevel(); 
+
+	decors.push_back("images\\stage\\foret.png");
+	decors.push_back("images\\stage\\arene.png");
+	decors.push_back("images\\stage\\plaine.png");
+
+	
+}
+
+
+
+void Game::BeginLevel() {
+
+	_spriteA = new SpritesA(12, _pge, 25, 100, true, true, false, olc::STANDART_BARBARIAN); // création du joueur 
+
+	switch (_level)
+	{
+	   case 1:
+		   _spriteB = new SpritesA(12, _pge, 250, 100, true, false, true, olc::DARK_BLUE); //création du l'IA
+		   _spriteB->_level = 1; 
+		break;
+	}
+
+	_spriteA->_enemy = _spriteB;
+	_spriteB->_enemy = _spriteA;
+
 }
 
 void Game::Update(float ElapsedTime)
@@ -26,9 +48,11 @@ void Game::Update(float ElapsedTime)
 		}*/
 
 			_pge->Clear(olc::BLACK);
-			imageS = new olc::Sprite(decors[0]);
-		
+			imageS = new olc::Sprite(decors[_choiceStage]);
 			_pge->DrawSprite(0, 0, imageS);
+
+		/*
+			
 			_pge->DrawString(0, 0, " ETAT B : " + std::to_string(_spriteB->_internalState));
 			_pge->DrawString(0, 8, " index image : " + std::to_string(_spriteB->_indexImage));
 			_pge->DrawString(0, 16, " startF : " + std::to_string(_spriteB->_startFrame));
@@ -38,20 +62,18 @@ void Game::Update(float ElapsedTime)
 			_pge->DrawString(0, 48, " ETAT A : " + std::to_string(_spriteA->_internalState));
 			_pge->DrawString(82, 0, " _x spA : " + std::to_string((int)_spriteA->_x));
 			_pge->DrawString(180, 0, " _x spB : " + std::to_string((int)_spriteB->_x));
-
-			if (_spriteA->_isAlive)
-			{
+			*/
+			
 				_spriteA->Update(ElapsedTime);
 				_spriteA->Draw();
 				DrawSpriteLife(_spriteA, 10, 5, 3, 2);
-			}
+			
 
-			if (_spriteB->_isAlive)
-			{
+			
 				_spriteB->Update(ElapsedTime);
 				_spriteB->Draw();
 				DrawSpriteLife(_spriteB,282,5,3,2); 
-			}
+			
 			
 		
 	}
@@ -107,10 +129,21 @@ void Game::Draw()
 {
 }
 
+void Game::deleteFromVector(std::vector<olc::Sprite*> tabToClean)
+{
+	for (auto it = tabToClean.cbegin(); it != tabToClean.cend(); it++)
+	{
+		delete (*it);
+	}
+	tabToClean.clear();
+}
+
 
 Game::~Game()
 {
 	delete _spriteA; 
 	delete _spriteB; 
+
+	deleteFromVector(imageDecors);
 
 }

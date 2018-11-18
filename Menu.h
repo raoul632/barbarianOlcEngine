@@ -16,6 +16,10 @@ public:
 	bool isExit = false; 
 	int lWIDTH; 
 	int lHEIGHT; 
+	std::vector<std::string> imagesDecorsmini;
+	std::vector<olc::Sprite*> spritesDecorsmini;
+	int stagesChoice; 
+
 	Timer *timer; 
 	olc::Sprite *imageS; 
 	
@@ -23,5 +27,7 @@ public:
 	Menu(olc::PixelGameEngine * pge);
 	//Menu(olc::PixelGameEngine * pge, int WIDTH, int HEIGHT);
 	~Menu();
+	void deleteFromVector(std::vector<olc::Sprite*> tabToClean);
 };
+
 
